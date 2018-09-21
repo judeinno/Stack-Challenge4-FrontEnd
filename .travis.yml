@@ -1,0 +1,22 @@
+language: python
+python:
+  - "3.6"
+# command to install dependencies
+install:
+  - "pip install -r requirements.txt"
+
+services:
+  - postgresql
+
+before_script:
+  - psql -c 'create database stackoverflowtestdb;' -U postgres
+  - psql -c 'create database stackoverflowtestanswers;' -U postgres
+
+# command to run tests
+script:
+   - nosetests --with-coverage --cover-package=app
+   - coverage report
+
+
+after_success:
+  - coveralls
