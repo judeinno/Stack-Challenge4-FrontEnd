@@ -22,113 +22,25 @@
         <div class="content">
             <div class="ask-question">
                 <section>
-                    <form action="index.html">
+                    <form id="askQuestion" action="index.html">
                       <label>Find question</label><br>
                         <label>
-                            <input type="text" name="question" placeholder="Your question">
+                            <input id="Question" type="text" name="question" placeholder="Your question">
                         </label><br>
                       <input id ="submit-question" type="submit" value="Submit">
                     </form>
                 </section>
             </div>
-            <div class="ask-question">
-                    <label>Questions asked = 6</label>
-                    <label>Answers asked = 6</label>
-            </div>
             <div id="questions">
                 <div class="container">
                     <div class="row no-collapse-1">
-                        <section class="specific-question"><p class="actual-question">What is the html?</p>
-                            <div class="box">
-                                <p> Hypertext Markup Language, a standardized system for
-                                    tagging text files to achieve font, colour, graphic,
-                                    and hyperlink effects on World Wide Web pages.
-                                </p><button type="button">Accept answer</button>
-                                    <button type="button">Up vote</button>
-                                    <button type="button">Down vote</button>
-                                    <button type="button">Comment</button>
-                                <p> Hypertext Markup Language is the standard markup language
-                                    for creating web pages and web applications. With Cascading
-                                    Style Sheets and JavaScript, it forms a triad of cornerstone
-                                    technologies for the World Wide Web.
-                                </p><button type="button">Accept answer</button>
-                                    <button type="button">Up vote</button>
-                                    <button type="button">Down vote</button>
-                                    <button type="button">Comment</button><br><br>
-                                <a href="Single-question.html" class="button">View more answers</a>
-                                <a href="#" class="button">Add answer</a>
-                                <a href="#" class="button">Delete Question</a>
-                            </div>
-                        </section>
-                        <section class="specific-question"><p class="actual-question">What is the best approach to tdd?</p>
-                            <div class="box">
-                                <p>
-                                    Test-driven development (TDD) is a development technique where you must
-                                    first write a test that fails before you write new functional code.
-                                </p><button type="button">Accept answer</button>
-                                    <button type="button">Up vote</button>
-                                    <button type="button">Down vote</button>
-                                    <button type="button">Comment</button>
-                                <p>
-                                    Test-driven development (TDD) is a software development process that relies
-                                    on the repetition of a very short development cycle: first the developer writes an
-                                    (initially failing) automated test case that defines a desired improvement or new function,
-                                    then produces the minimum amount of code to pass that test, and finally refactors the new code
-                                    to acceptable standards
-                                </p><button type="button">Accept answer</button>
-                                    <button type="button">Up vote</button>
-                                    <button type="button">Down vote</button>
-                                    <button type="button">Comment</button><br><br>
-                                <a href="#" class="button">View more answers</a>
-                                <a href="#" class="button">Add answer</a>
-                                <a href="#" class="button">Delete Question</a>
-                            </div>
-                        </section>
-                        <section class="specific-question"><p class="actual-question">Why does my travis.yml file not get pushed to my git hub?</p>
-                            <div class="box">
-                                <p>
-                                    Check if its included your .gitignore file
-                                </p><button type="button">Accept answer</button>
-                                    <button type="button">Up vote</button>
-                                    <button type="button">Down vote</button>
-                                    <button type="button">Comment</button><br><br>
-                                <a href="#" class="button">View more answers</a>
-                                <a href="#" class="button">Add answer</a>
-                                <a href="#" class="button">Delete Question</a>
-                            </div>
-                        </section>
-                    </div>
-                    <div class="row no-collapse-1">
+                        <section class="specific-question">
+                            <div id="questionslist" class="actual-question"></div>
 
-                        <section class="specific-question"><p class="actual-question">Why is my pivotal tracker is not integrating to git hub?</p>
-                            <div class="box">
-                                <p>Create an integration in your pivotal tracker board</p>
-                                <button type="button">Accept answer</button>
-                                    <button type="button">Up vote</button>
-                                    <button type="button">Down vote</button>
-                                    <button type="button">Comment</button><br><br>
-                                <a href="#" class="button">View more answers</a>
-                                <a href="#" class="button">Add answer</a>
-                                <a href="#" class="button">Delete Question</a>
-                            </div>
                         </section>
-                        <section class="specific-question"><p class="actual-question">How do i test a database?</p>
-                            <div class="box">
-                                <p>No answers yet</p>
-                                <a href="#" class="button">View more answers</a>
-                                <a href="#" class="button">Add answer</a>
-                                <a href="#" class="button">Delete Question</a>
-                            </div>
-                        </section>
-                        <section class="specific-question"><p class="actual-question">What is be best way to name python files?</p>
-                            <div class="box">
-                                <p>No answers yet</p>
-                                <a href="#" class="button">View more answers</a>
-                                <a href="#" class="button">Add answer</a>
-                                <a href="#" class="button">Delete Question</a>
-                            </div>
-                        </section>
+
                     </div>
+
                 </div>
             </div>
         </div>
@@ -138,5 +50,72 @@
                 <p>2018 StackOverFlow-lite</p>
             </footer>
         </div>
+        <script>
+
+            document.getElementById("askQuestion").addEventListener("submit", questionPost);
+            document.getElementById("questionslist").addEventListener("load", getQuestions());
+            token = localStorage.getItem('token')
+
+            function questionPost(e) {
+                e.preventDefault();
+                let Question = document.getElementById("Question").value;
+                console.log(Question);
+                data = {
+                    'Question': Question,
+                };
+                let  url = "http://127.0.0.1:5000/api/v1/questions";
+                fetch(url, {
+                    method: "post",
+                    body: JSON.stringify(data),
+                    headers: {
+                        "Accept": "application/json, text/plain, */*",
+                        "Content-Type": "application/json",
+                        "Authorization":` Bearer ${token}`
+                    }
+                })
+                .then(res => res.json())
+                .then(response => {
+                    console.log(response)
+                    if (response.message === 'Token has expired') {
+                        alert('Token has expired');
+                        window.location.replace('signin.html');}
+                    else if (response.message === 'Question already exists, please ask another question') {
+                        alert("Question already exists, please ask another question");
+                        window.location.replace('All-question.html');
+                    }
+                    else if (response.message === 'Invalid, Please enter a valid question') {
+                        alert("Invalid, Please enter a valid question");
+                        window.location.replace('All-question.html');
+                    }
+                    else if (response.message === 'You have successfully asked a question') {
+                        alert("You have successfully asked a question");
+                        window.location.replace('All-question.html');
+                    }
+
+                }
+                )
+                .catch(error => console.error("Error:", error));
+            }
+            function getQuestions(){
+                fetch('http://127.0.0.1:5000/api/v1/questions')
+                .then((res) => res.json())
+                .then((data) => {
+                    let output = '<h2>Questions</h2>';
+                    data.forEach(function(post){
+                        output += `
+                        <ul class="questions">
+                            <li><a href = "Single-question.html" onclick="viewQuestion(${post.qnId})">${post.Question}</a></li>
+                        </ul>
+                        <hr>
+                    `;
+                    });
+                    document.getElementById('questionslist').innerHTML = output;
+                })
+            }
+
+        </script>
+        <script>
+
+        </script>
     </body>
 </html>
