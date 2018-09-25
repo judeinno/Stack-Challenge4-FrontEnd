@@ -76,7 +76,7 @@
                 .then(res => res.json())
                 .then(response => {
                     console.log(response)
-                    if (response.message === 'Token has expired') {
+                    if (response.message === "Token has expired") {
                         alert('Token has expired');
                         window.location.replace('signin.html');}
                     else if (response.message === 'Question already exists, please ask another question') {
@@ -101,10 +101,11 @@
                 .then((res) => res.json())
                 .then((data) => {
                     let output = '<h2>Questions</h2>';
+                    console.log(data)
                     data.forEach(function(post){
                         output += `
                         <ul class="questions">
-                            <li><a href = "Single-question.html" onclick="viewQuestion(${post.qnId})">${post.Question}</a></li>
+                            <li><a href = "Single-question.html?questionId=${post.qn_id}">Question No ${post.qn_id};  ${post.Question}</a></li>
                         </ul>
                         <hr>
                     `;
