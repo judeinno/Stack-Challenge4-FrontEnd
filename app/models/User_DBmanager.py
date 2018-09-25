@@ -176,11 +176,11 @@ class DBManager:
         all_ans = []
         for value in range( len(Answers) ):
             ans_variable = (
-                [{'Ans_id': Answers[value][0],
+                {'Ans_id': Answers[value][0],
                  'Answer': Answers[value][1],
-                 'Prefered_Ans_Status': Answers[value][2]}])
+                 'Prefered_Ans_Status': Answers[value][2]})
             all_ans.append( ans_variable )
-        return {'Your question is': single_qns+all_ans}
+        return {'Your_question_is': single_qns+all_ans}
 
     def delete_question(self, qnId):
         query = "DELETE FROM questions WHERE qnId=%s"
