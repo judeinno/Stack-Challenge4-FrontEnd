@@ -96,7 +96,19 @@ ul.questions>li>a {
     font-style: normal;
 
 }
+ul.questions>li {
+    color: white;
+    font-size: larger;
+    font-style: normal;
 
+}
+
+ul.questions>li>button {
+    border-radius: 10px;
+    font-size: 15px;
+    font-style: normal;
+
+}
 .box {
     padding: 60px 10px;
     background: #ebebec;
