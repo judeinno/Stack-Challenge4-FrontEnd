@@ -23,27 +23,20 @@
             <div id="questions">
                 <div class="container">
                     <div class="row no-collapse-1">
-                        <section class="single-question"><p class="actual-question">What is the html?</p>
-                            <div class="box">
-                                <p> Hypertext Markup Language, a standardized system for
-                                    tagging text files to achieve font, colour, graphic,
-                                    and hyperlink effects on World Wide Web pages.
-                                </p><button type="button">Accept answer</button>
-                                    <button type="button">Up vote</button>
-                                    <button type="button">Down vote</button>
-                                    <button type="button">Comment</button>
-                                <p> Hypertext Markup Language is the standard markup language
-                                    for creating web pages and web applications. With Cascading
-                                    Style Sheets and JavaScript, it forms a triad of cornerstone
-                                    technologies for the World Wide Web.
-                                </p><button type="button">Accept answer</button>
-                                    <button type="button">Up vote</button>
-                                    <button type="button">Down vote</button>
-                                    <button type="button">Comment</button><br><br>
-                                <a href="#" class="button">Add answer</a>
-                                <a href="#" class="button">Delete Question</a>
-                            </div>
+                        <section class="single-question">
+                            <div id="actual-question" class="actual-question"></div>
+
                         </section>
+                    </div>
+                    <div class="question-content">
+                        <div id="asked-qn"></div><button id="delete" type="submit">Delete Question</button>
+                        <div id="answers-sector">
+                            <p>Click on a question to view or add an answer to it.</p>
+                        </div>
+                        <form  id="postanswer">
+                            <input type="text" id="Answer" placeholder="Add an answer to this question ...">
+                            <input id ="submit-answer" type="submit" value="Submit">
+                        </form>
                     </div>
             </div>
         </div>
@@ -54,5 +47,117 @@
             </footer>
         </div>
         </div>
+        <script>
+            document.getElementById("actual-question")
+            token = localStorage.getItem('token')
+            let url_var = window.location.href
+            let url = new URL(url_var)
+            let qn_id = url.searchParams.get("questionId")
+            localStorage.setItem('qn_id', qn_id)
+            qnId = localStorage.getItem('qn_id')
+            getQuestion(qnId)
+            function getQuestion(qnId){
+                console.log(qnId)
+                fetch('http://127.0.0.1:5000/api/v1/questions/'+ qnId,{headers: {"Authorization":` Bearer ${token}`}})
+                .then((res) => res.json())
+                .then((data) => {
+                    let output = '<h2>Your Question is:</h2>';
+                    console.log(data)
+                    console.log(data["Your_question_is"][0]["Question"])
+                    let MyQuestion = data["Your_question_is"][0]["Question"]
+                    let MyAnswers = data["Your_question_is"]
+
+                    if(MyAnswers && MyAnswers.length ){
+                            for(i=0; i<MyAnswers.length; i++){
+                            let myanswer = (MyAnswers[i]["Answer"])
+                            let status = (MyAnswers[i]["Prefered_Ans_Status"])
+                            output += `
+                            <hr>
+                            <ul class="questions">
+                                <li>${MyQuestion}</li>
+                            </ul>
+                            <hr>
+                            <ul class="questions">
+                                <li>${myanswer}</li>
+                                <li>Prefered_Ans_Status:  <button placeholder="Status">${status}</button></li>
+                            </ul>
+
+                        `;
+                        }
+                    }
+                    else{
+                        output += `
+                            <hr>
+                            <ul class="questions">
+                                <li>${MyQuestion}</li>
+                            </ul>
+                            <hr>`;
+                    }
+
+                    document.getElementById('actual-question').innerHTML = output;
+
+
+                })
+            }
+
+            document.getElementById("postanswer").addEventListener("submit", answerPost);
+            function answerPost(e) {
+                 e.preventDefault();
+                let qnId = localStorage.getItem("qn_id");
+                let Answer = document.getElementById("Answer").value;
+                console.log(Answer);
+                data = {
+                    'Answer': Answer,
+                };
+                fetch('http://127.0.0.1:5000/api/v1/questions/'+ qnId + '/answers', {
+                    method: "post",
+                    body: JSON.stringify(data),
+                    headers: {
+                        "Accept": "application/json, text/plain, */*",
+                        "Content-Type": "application/json",
+                        "Authorization":` Bearer ${token}`
+                    }
+                })
+                .then(res => res.json())
+                .then(response => {
+                    console.log(response)
+                    if (response.message === "Token has expired") {
+                        alert('Token has expired');
+                        window.location.replace('signin.html');}
+                    else if (response.message === 'Invalid, Please enter a valid answer') {
+                        alert("Invalid, Please enter a valid answer");
+                        window.location.replace('Single-question.html');
+                    }
+                    else if (response.message === 'answer successfully created') {
+                        alert("answer successfully created");
+                    }
+
+                }
+                )
+                .catch(error => console.error("Error:", error));
+            }
+
+            document.getElementById("delete").addEventListener("click", deleteqn);
+            function deleteqn() {
+                let qnDelete = localStorage.getItem("qn_id");
+                fetch('http://127.0.0.1:5000/api/v1/questions/' + qnDelete, {
+                        method: 'DELETE',
+                        headers: {
+                            'Accept': 'application/json, text/plain, */*',
+                            'Content-type': 'application/json',
+                            "Authorization":` Bearer ${token}`
+                        }
+                    })
+                    .then((res) => res.json())
+                    .then((res) => {
+                        if (res.message === "Question deleted successfully") {
+                            console.log(res);
+                            alert(res.message);
+                            window.location.href = 'All-question.html'
+                        }
+                    })
+            }
+
+        </script>
     </body>
 </html>
